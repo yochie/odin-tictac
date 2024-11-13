@@ -40,25 +40,14 @@ const game = (function (doc, players) {
 
         const winChecker = (function () {
             function boardWonBy() {
+                const winCons = [rowWinner, columnWinner, backDiagWinner, fwdDiagWinner];
                 let winner;
-
-                if ((winner = rowWinner())) {
+                const satisfied = winCons.find(condition => (winner = condition()) !== null);
+                if (satisfied){
                     return winner;
+                } else {
+                    return null;
                 }
-
-                if ((winner = columnWinner())) {
-                    return winner;
-                }
-
-                if ((winner = backDiagWinner())) {
-                    return winner;
-                }
-
-                if ((winner = fwdDiagWinner())) {
-                    return winner;
-                }
-
-                return null;
             }
 
             function rowWinner() {
