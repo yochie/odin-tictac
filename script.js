@@ -6,6 +6,90 @@ const game = (function (doc) {
             [null, null, null]
         ];
 
+        const winChecker = (function () {
+            function boardWonBy() {
+                let winner;
+
+                if ((winner = rowWinner())) {
+                    return winner;
+                }
+
+                if ((winner = columnWinner())) {
+                    return winner;
+                }
+
+                if ((winner = backDiagWinner())) {
+                    return winner;
+                }
+
+                if ((winner = fwdDiagWinner())) {
+                    return winner;
+                }
+
+                return null;
+            }
+
+            function rowWinner() {
+                for (let row of boardState) {
+                    let first = row[0];
+                    if (first === null) {
+                        continue;
+                    }
+                    if (row.every(val => val === first)) {
+                        return first;
+                    }
+                }
+                return null;
+            }
+
+            function columnWinner() {
+                column: for (let col = 0; col < state[0].length; col++) {
+                    const first = state[0][col];
+                    if (first === null) {
+                        continue;
+                    }
+                    for (let row of state) {
+                        if (row[col] !== first) {
+                            continue column;
+                        }
+                    }
+                    return first;
+                }
+
+                return null;
+            }
+
+            function backDiagWinner() {
+                const first = state[0][0];
+                if (first === null) {
+                    return null;
+                }
+                for (let i = 1; i < state.length; i++) {
+                    if (state[i][i] !== first) {
+                        return null;
+                    }
+                }
+                return first;
+            }
+
+            function fwdDiagWinner() {
+                const first = state[0].at(-1);
+                if (first === null) {
+                    return null;
+                }
+                for (let i = 1; i < state.length; i++) {
+                    if (state[i].at(-1 - i) !== first) {
+                        return null;
+                    }
+                }
+                return first;
+            }
+
+            return {
+                boardWonBy,
+            }
+        })();
+
         //Attempts to alter board state
         //returns false if illegal move
         //returns true if valid move
@@ -22,81 +106,7 @@ const game = (function (doc) {
         //returns null if none found
         //returns player id otherwise
         function gameWonBy() {
-            let winner;
-
-            if ((winner = rowWinner())) {
-                return winner;
-            }
-
-            if ((winner = columnWinner())) {
-                return winner;
-            }
-
-            if ((winner = backDiagWinner())) {
-                return winner;
-            }
-
-            if ((winner = fwdDiagWinner())) {
-                return winner;
-            }
-
-            return null;
-        }
-
-        function rowWinner() {
-            for (let row of state) {
-                let first = row[0];
-                if (first === null) {
-                    continue;
-                }
-                if (row.every(val => val === first)) {
-                    return first;
-                }
-            }
-            return null;
-        }
-
-        function columnWinner() {
-            column: for (let col = 0; col < state[0].length; col++) {
-                const first = state[0][col];
-                if (first === null) {
-                    continue;
-                }
-                for (let row of state) {
-                    if (row[col] !== first) {
-                        continue column;
-                    }
-                }
-                return first;
-            }
-
-            return null;
-        }
-
-        function backDiagWinner() {
-            const first = state[0][0];
-            if (first === null) {
-                return null;
-            }
-            for (let i = 1; i < state.length; i++) {
-                if (state[i][i] !== first) {
-                    return null;
-                }
-            }
-            return first;
-        }
-
-        function fwdDiagWinner() {
-            const first = state[0].at(-1);
-            if (first === null) {
-                return null;
-            }
-            for (let i = 1; i < state.length; i++) {
-                if (state[i].at(-1 - i) !== first) {
-                    return null;
-                }
-            }
-            return first;
+            return winChecker.boardWonBy();
         }
 
         function isFull() {
