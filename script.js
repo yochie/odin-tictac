@@ -131,7 +131,6 @@ const game = (function (doc, players) {
         }
 
         function isFull() {
-            // check if all slots are filled
             for (let row of state) {
                 for (let val of row) {
                     if (val === null) {
@@ -156,9 +155,7 @@ const game = (function (doc, players) {
 
         function reset() {
             for (let row of state) {
-                for (let col = 0; col < row.length; col++) {
-                    row[col] = null;
-                }
+                row.fill(null);
             }
         }
 
