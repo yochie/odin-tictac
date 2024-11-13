@@ -1,4 +1,36 @@
-const game = (function (doc) {
+const playerList = (function () {
+    //player id is index in this list
+    const players = [
+        createPlayer("X"),
+        createPlayer("O"),
+    ];
+
+    function createPlayer(symbol) {
+        return {
+            symbol
+        }
+    }
+
+    function randomID() {
+        return Math.floor(Math.random() * players.length);
+    }
+
+    function nextPlayerID(previousID) {
+        return (previousID + 1) % players.length;
+    }
+
+    function getSymbolFor(id) {
+        return players[id].symbol;
+    }
+
+    return {
+        randomID,
+        nextPlayerID,
+        getSymbolFor
+    }
+})();
+
+const game = (function (doc, players) {
     const board = (function () {
         const state = [
             [null, null, null],
@@ -30,7 +62,7 @@ const game = (function (doc) {
             }
 
             function rowWinner() {
-                for (let row of boardState) {
+                for (let row of state) {
                     let first = row[0];
                     if (first === null) {
                         continue;
@@ -113,7 +145,7 @@ const game = (function (doc) {
             // check if all slots are filled
             for (let row of state) {
                 for (let val of row) {
-                    if (!val) {
+                    if (val === null) {
                         return false;
                     }
                 }
@@ -150,32 +182,25 @@ const game = (function (doc) {
         }
     })();
 
-    let currentPlayerIndex = null;
-    const players = [createPlayer(1, "X"), createPlayer(2, "O")];
-
-    function createPlayer(id, symbol) {
-        return {
-            id, symbol
-        }
-    }
+    let currentPlayerId = null;
 
     function startGame() {
         board.reset();
-        currentPlayerIndex = Math.floor(Math.random() * 2);
-        console.log(`New game started. Starting with player ${players[currentPlayerIndex].id}`);
+        currentPlayerId = players.randomID();
+        console.log(`New game started. Starting with player ${currentPlayerId}`);
     }
 
     function playTurn(row, col) {
-        if (currentPlayerIndex == null) {
+        if (currentPlayerId == null) {
             return;
         }
-        if (!board.doMove(players[currentPlayerIndex].id, row, col)) {
+        if (!board.doMove(currentPlayerId, row, col)) {
             //illegal move
             return;
         }
 
         let winner = board.gameWonBy();
-        if (winner) {
+        if (winner !== null) {
             gameOver(winner);
         } else {
             if (board.isFull()) {
@@ -187,16 +212,16 @@ const game = (function (doc) {
     }
 
     function swapTurn() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-        console.log(`Next turn. Your move player ${players[currentPlayerIndex].id}.`)
+        currentPlayerId = players.nextPlayerID(currentPlayerId);
+        console.log(`Next turn. Your move player ${currentPlayerId}.`)
     }
 
     //if winner == null, game is tied
     //otherwise winner should be player id
     function gameOver(winner) {
-        currentPlayerIndex = null;
+        currentPlayerId = null;
         //do some ui stuff...
-        if (!winner) {
+        if (winner === null) {
             console.log("gameover : tie");
         } else {
             console.log(`gameover: player ${winner} is the winner`);
@@ -209,4 +234,29 @@ const game = (function (doc) {
         state: board.getReadOnlyState
     }
 
-})(document);
+})(document, playerList);
+
+const gridRows = 3, gridCols = 3;
+const displayer = (function (doc, rows, cols, players) {
+    const domCellsArray = Array.from(doc.querySelectorAll(".game-grid .cell"));
+    const grid = []
+    let cellIndex = 0;
+    for (let row = 0; row < rows; row++) {
+        grid[row] = [];
+        for (let col = 0; col < cols; col++) {
+            grid[row][col] = domCellsArray[cellIndex++];
+        }
+    }
+
+    function update(boardState) {
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                const cellOccupiedByPlayer = boardState[row][col]; 
+                grid[row][col].textContent = cellOccupiedByPlayer !== null ? players.getSymbolFor(cellOccupiedByPlayer) : "";
+            }
+        }
+    }
+    return {
+        update,
+    }
+})(document, gridRows, gridCols, playerList);
