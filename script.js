@@ -186,7 +186,7 @@ const game = (function (doc, players) {
 
     let currentPlayerId = null;
     let gameWinner = null;
-    let gameOver  = false;
+    let gameOver = false;
 
     function startGame() {
         gameOver = false;
@@ -240,11 +240,11 @@ const game = (function (doc, players) {
         }
     }
 
-    function isGameOver(){
+    function isGameOver() {
         return gameOver;
     }
 
-    function getGameWinner(){
+    function getGameWinner() {
         return gameWinner;
     }
 
@@ -304,12 +304,12 @@ const gridDisplayer = (function (doc, rows, cols, players, grid) {
             }
         }
     }
-    
-    function gameOver(){
+
+    function gameOver() {
         container.classList.add("disabled");
     }
 
-    function gameStart(){
+    function gameStart() {
         container.classList.remove("disabled");
     }
 
@@ -348,17 +348,21 @@ const turnDisplayer = (function (doc, players) {
     }
 })(document, playerList);
 
-const gameOverDisplayer = (function (doc, players){
+const gameOverDisplayer = (function (doc, players) {
     const overlay = doc.querySelector(".overlay");
     const message = doc.querySelector(".game-over-display-msg");
-    
-    function display(winnerID){
-       message.textContent = `${players.getNameFor(winnerID)} wins`;
-       overlay.classList.remove("hidden");
+
+    function display(winnerID) {
+        if (winnerID == null) {
+            message.textContent = "Its a tie"
+        } else {
+            message.textContent = `${players.getNameFor(winnerID)} wins`;
+        }
+        overlay.classList.remove("hidden");
     }
 
-    function hide(){
-        overlay.style.add = "hidden";
+    function hide() {
+        overlay.classList.add("hidden");
     }
 
     return {
@@ -380,7 +384,7 @@ const gameOverDisplayer = (function (doc, players){
         const [cellRow, cellCol] = cellGrid.getCellPositionByIndex(clickedCellIndex);
         game.playTurn(cellRow, cellCol);
         gridDisplayer.update(game.getBoardState());
-        if(game.isGameOver()){
+        if (game.isGameOver()) {
             gridDisplayer.gameOver();
             gameOverDisplayer.display(game.getGameWinner());
         }
