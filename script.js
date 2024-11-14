@@ -243,9 +243,8 @@ const game = (function (doc, players) {
 })(document, playerList);
 
 const gridRows = 3, gridCols = 3;
-const displayer = (function (doc, rows, cols, players) {
+const gridDisplayer = (function (doc, rows, cols, players) {
     const grid = parseGrid();
-    const playerTurnIndicators = createTurnIndicators();
 
     function parseGrid() {
         const domCells = Array.from(doc.querySelectorAll(".game-grid .cell"));
@@ -260,6 +259,24 @@ const displayer = (function (doc, rows, cols, players) {
         return grid;
     }
 
+    function update(boardState) {
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
+                const cellOccupiedByPlayer = boardState[row][col];
+                grid[row][col].textContent = cellOccupiedByPlayer !== null ? players.getSymbolFor(cellOccupiedByPlayer) : "";
+            }
+        }
+    }
+
+    return {
+        update,
+    }
+
+})(document, gridRows, gridCols, playerList);
+
+const turnDisplayer = (function(doc, players){
+    const playerTurnIndicators = createTurnIndicators();
+
     function createTurnIndicators() {
         const playerNodes = [];
         const container = doc.querySelector(".player-turn-indicator");
@@ -273,27 +290,13 @@ const displayer = (function (doc, rows, cols, players) {
         return playerNodes;
     }
 
-    function update(boardState, activePlayer) {
-        updateGrid(boardState);
-        updateTurn(activePlayer);
-    }
-
-    function updateTurn(activePlayer) {
+    function update(activePlayer) {
         for (let playerID of playerTurnIndicators.keys()) {
             playerTurnIndicators[playerID].className = playerID === activePlayer ? "active" : "inactive";
         }
     }
 
-    function updateGrid(boardState) {
-        for (let row = 0; row < rows; row++) {
-            for (let col = 0; col < cols; col++) {
-                const cellOccupiedByPlayer = boardState[row][col];
-                grid[row][col].textContent = cellOccupiedByPlayer !== null ? players.getSymbolFor(cellOccupiedByPlayer) : "";
-            }
-        }
-    }
-
     return {
-        update,
+        update
     }
-})(document, gridRows, gridCols, playerList);
+})(document, playerList);
