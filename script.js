@@ -224,7 +224,6 @@ const game = (function (doc, players) {
     //if winner == null, game is tied
     //otherwise winner should be player id
     function gameOver(winner) {
-        currentPlayerId = null;
         //do some ui stuff...
         if (winner === null) {
             console.log("gameover : tie");
@@ -236,16 +235,15 @@ const game = (function (doc, players) {
     return {
         startGame,
         playTurn,
-        boardState: board.getReadOnlyState,
+        getBoardState: board.getReadOnlyState,
         getActivePlayer,
     }
 
 })(document, playerList);
 
 const gridRows = 3, gridCols = 3;
-const gridDisplayer = (function (doc, rows, cols, players) {
+const gameGrid = (function (doc, rows, cols) {
     const grid = parseGrid();
-
     function parseGrid() {
         const domCells = Array.from(doc.querySelectorAll(".game-grid .cell"));
         const grid = [];
@@ -259,11 +257,31 @@ const gridDisplayer = (function (doc, rows, cols, players) {
         return grid;
     }
 
+    function getCellAt(row, col) {
+        return grid[row][col];
+    }
+
+    function getCellPositionByIndex(cellIndex) {
+        return [
+            Math.floor(cellIndex / rows),
+            cellIndex % rows
+        ]
+    }
+
+    return {
+        getCellAt,
+        getCellPositionByIndex,
+    }
+
+})(document, gridRows, gridCols);
+
+const gridDisplayer = (function (rows, cols, players, grid) {
+
     function update(boardState) {
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
                 const cellOccupiedByPlayer = boardState[row][col];
-                grid[row][col].textContent = cellOccupiedByPlayer !== null ? players.getSymbolFor(cellOccupiedByPlayer) : "";
+                grid.getCellAt(row, col).textContent = cellOccupiedByPlayer !== null ? players.getSymbolFor(cellOccupiedByPlayer) : "";
             }
         }
     }
@@ -272,9 +290,9 @@ const gridDisplayer = (function (doc, rows, cols, players) {
         update,
     }
 
-})(document, gridRows, gridCols, playerList);
+})(gridRows, gridCols, playerList, gameGrid);
 
-const turnDisplayer = (function(doc, players){
+const turnDisplayer = (function (doc, players) {
     const playerTurnIndicators = createTurnIndicators();
 
     function createTurnIndicators() {
@@ -300,3 +318,23 @@ const turnDisplayer = (function(doc, players){
         update
     }
 })(document, playerList);
+
+(function (doc, cellGrid) {
+    const container = doc.querySelector(".game-grid");
+
+    container.addEventListener("click", function (event) {
+        const clicked = event.target;
+        if (event.target.className !== "cell") {
+            return;
+        }
+
+        const clickedCellIndex = [...container.children].indexOf(clicked);
+        const [cellRow, cellCol] = cellGrid.getCellPositionByIndex(clickedCellIndex);
+        game.playTurn(cellRow, cellCol);
+        gridDisplayer.update(game.getBoardState());
+        turnDisplayer.update(game.getActivePlayer());
+    });
+})(document, gameGrid);
+
+game.startGame();
+turnDisplayer.update(game.getActivePlayer());
