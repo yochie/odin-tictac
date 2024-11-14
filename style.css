@@ -1,5 +1,14 @@
 @import "modern-normalize.css";
 
+@font-face {
+  font-family: 'blackswordregular';
+  src: url('fonts/blacksword-webfont.woff2') format('woff2'),
+    url('fonts/blacksword-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
 :root {
   line-height: 1.5;
 }
@@ -76,7 +85,8 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-size: 2rem;
+  font-family: blackswordregular;
 }
 
 .game-grid .cell:nth-child(3n+2) {
