@@ -52,3 +52,8 @@ img {
  {
   border-bottom: 1px solid black;
 }
+
+.player-turn-indicator p.active {
+  font-weight: bold;
+  font-size: 1.2rem;
+}

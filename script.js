@@ -23,10 +23,25 @@ const playerList = (function () {
         return players[id].symbol;
     }
 
+    function setName(id, name) {
+        players[id].name = name;
+    }
+
+    function getNameFor(id) {
+        return players[id].name;
+    }
+
+    function getIDs() {
+        return players.keys();
+    }
+
     return {
         randomID,
         nextPlayerID,
-        getSymbolFor
+        getSymbolFor,
+        setName,
+        getNameFor,
+        getIDs,
     }
 })();
 
@@ -43,7 +58,7 @@ const game = (function (doc, players) {
                 const winCons = [rowWinner, columnWinner, backDiagWinner, fwdDiagWinner];
                 let winner;
                 const satisfied = winCons.find(condition => (winner = condition()) !== null);
-                if (satisfied){
+                if (satisfied) {
                     return winner;
                 } else {
                     return null;
@@ -202,6 +217,10 @@ const game = (function (doc, players) {
         console.log(`Next turn. Your move player ${currentPlayerId}.`)
     }
 
+    function getActivePlayer() {
+        return currentPlayerId;
+    }
+
     //if winner == null, game is tied
     //otherwise winner should be player id
     function gameOver(winner) {
@@ -217,31 +236,63 @@ const game = (function (doc, players) {
     return {
         startGame,
         playTurn,
-        state: board.getReadOnlyState
+        boardState: board.getReadOnlyState,
+        getActivePlayer,
     }
 
 })(document, playerList);
 
 const gridRows = 3, gridCols = 3;
 const displayer = (function (doc, rows, cols, players) {
-    const domCellsArray = Array.from(doc.querySelectorAll(".game-grid .cell"));
-    const grid = []
-    let cellIndex = 0;
-    for (let row = 0; row < rows; row++) {
-        grid[row] = [];
-        for (let col = 0; col < cols; col++) {
-            grid[row][col] = domCellsArray[cellIndex++];
+    const grid = parseGrid();
+    const playerTurnIndicators = createTurnIndicators();
+
+    function parseGrid() {
+        const domCells = Array.from(doc.querySelectorAll(".game-grid .cell"));
+        const grid = [];
+        let cellIndex = 0;
+        for (let row = 0; row < rows; row++) {
+            grid[row] = [];
+            for (let col = 0; col < cols; col++) {
+                grid[row][col] = domCells[cellIndex++];
+            }
+        }
+        return grid;
+    }
+
+    function createTurnIndicators() {
+        const playerNodes = [];
+        const container = doc.querySelector(".player-turn-indicator");
+        for (let playerID of players.getIDs()) {
+            const node = doc.createElement("p");
+            node.textContent = `player ${players.getSymbolFor(playerID)}`;
+            container.appendChild(node);
+            playerNodes[playerID] = node;
+        }
+
+        return playerNodes;
+    }
+
+    function update(boardState, activePlayer) {
+        updateGrid(boardState);
+        updateTurn(activePlayer);
+    }
+
+    function updateTurn(activePlayer) {
+        for (let playerID of playerTurnIndicators.keys()) {
+            playerTurnIndicators[playerID].className = playerID === activePlayer ? "active" : "inactive";
         }
     }
 
-    function update(boardState) {
+    function updateGrid(boardState) {
         for (let row = 0; row < rows; row++) {
             for (let col = 0; col < cols; col++) {
-                const cellOccupiedByPlayer = boardState[row][col]; 
+                const cellOccupiedByPlayer = boardState[row][col];
                 grid[row][col].textContent = cellOccupiedByPlayer !== null ? players.getSymbolFor(cellOccupiedByPlayer) : "";
             }
         }
     }
+
     return {
         update,
     }
