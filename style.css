@@ -41,9 +41,26 @@ img {
   min-height: 100vh;
   min-width: 100vw;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
+.player-turn-indicator {
+  text-align: right;
+  padding: 30px;
+}
+
+.player-turn-indicator p.active {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.player-turn-indicator p.inactive {
+  opacity: 0.5;
+}
 .game-grid {
+  flex: auto;
   display: grid;
   grid-template-columns: 100px 100px 100px;
   grid-auto-rows: 100px;
@@ -69,11 +86,6 @@ img {
 
 .game-grid .cell:nth-child(-n + 6) {
   border-bottom: 1px solid black;
-}
-
-.player-turn-indicator p.active {
-  font-weight: bold;
-  font-size: 1.2rem;
 }
 
 .overlay {
