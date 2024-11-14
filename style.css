@@ -4,16 +4,29 @@
   line-height: 1.5;
 }
 
-h1, h2, h3, h4, h5, figure, p, ol, ul {
+h1,
+h2,
+h3,
+h4,
+h5,
+figure,
+p,
+ol,
+ul {
   margin: 0;
 }
 
-ol[role="list"], ul[role="list"] {
+ol[role="list"],
+ul[role="list"] {
   list-style: none;
   padding-inline: 0;
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-size: inherit;
   font-weight: inherit;
 }
@@ -35,6 +48,10 @@ img {
   align-content: center;
 }
 
+.game-grid.disabled {
+  opacity: 0.2;
+}
+
 .game-grid .cell {
   display: flex;
   align-items: center;
@@ -42,18 +59,25 @@ img {
   font-size: 3rem;
 }
 
-.game-grid .cell:nth-child(3n+2)
- {
+.game-grid .cell:nth-child(3n+2) {
   border-right: 1px solid black;
   border-left: 1px solid black;
 }
 
-.game-grid .cell:nth-child(-n + 6)
- {
+.game-grid .cell:nth-child(-n + 6) {
   border-bottom: 1px solid black;
 }
 
 .player-turn-indicator p.active {
   font-weight: bold;
   font-size: 1.2rem;
+}
+
+.game-over-display {
+  position: absolute;
+  margin: auto;
+}
+
+.game-over-display.hidden {
+  display: none;
 }
