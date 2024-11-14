@@ -7,7 +7,8 @@ const playerList = (function () {
 
     function createPlayer(symbol) {
         return {
-            symbol
+            symbol,
+            name: symbol
         }
     }
 
@@ -184,8 +185,12 @@ const game = (function (doc, players) {
     })();
 
     let currentPlayerId = null;
+    let gameWinner = null;
+    let gameOver  = false;
 
     function startGame() {
+        gameOver = false;
+        gameWinner = null;
         board.reset();
         currentPlayerId = players.randomID();
         console.log(`New game started. Starting with player ${currentPlayerId}`);
@@ -202,10 +207,10 @@ const game = (function (doc, players) {
 
         let winner = board.gameWonBy();
         if (winner !== null) {
-            gameOver(winner);
+            setGameOver(winner);
         } else {
             if (board.isFull()) {
-                gameOver(null);
+                setGameOver(null);
             } else {
                 swapTurn();
             }
@@ -223,8 +228,11 @@ const game = (function (doc, players) {
 
     //if winner == null, game is tied
     //otherwise winner should be player id
-    function gameOver(winner) {
-        //do some ui stuff...
+    function setGameOver(winner) {
+        currentPlayerId = null;
+        gameOver = true;
+        gameWinner = winner;
+
         if (winner === null) {
             console.log("gameover : tie");
         } else {
@@ -232,11 +240,21 @@ const game = (function (doc, players) {
         }
     }
 
+    function isGameOver(){
+        return gameOver;
+    }
+
+    function getGameWinner(){
+        return gameWinner;
+    }
+
     return {
         startGame,
         playTurn,
         getBoardState: board.getReadOnlyState,
         getActivePlayer,
+        isGameOver,
+        getGameWinner,
     }
 
 })(document, playerList);
@@ -275,7 +293,8 @@ const gameGrid = (function (doc, rows, cols) {
 
 })(document, gridRows, gridCols);
 
-const gridDisplayer = (function (rows, cols, players, grid) {
+const gridDisplayer = (function (doc, rows, cols, players, grid) {
+    const container = doc.querySelector(".game-grid");
 
     function update(boardState) {
         for (let row = 0; row < rows; row++) {
@@ -285,12 +304,22 @@ const gridDisplayer = (function (rows, cols, players, grid) {
             }
         }
     }
+    
+    function gameOver(){
+        container.classList.add("disabled");
+    }
+
+    function gameStart(){
+        container.classList.remove("disabled");
+    }
 
     return {
         update,
+        gameOver,
+        gameStart,
     }
 
-})(gridRows, gridCols, playerList, gameGrid);
+})(document, gridRows, gridCols, playerList, gameGrid);
 
 const turnDisplayer = (function (doc, players) {
     const playerTurnIndicators = createTurnIndicators();
@@ -319,9 +348,28 @@ const turnDisplayer = (function (doc, players) {
     }
 })(document, playerList);
 
-(function (doc, cellGrid) {
-    const container = doc.querySelector(".game-grid");
+const gameOverDisplayer = (function (doc, players){
+    const div = doc.querySelector(".game-over-display");
+    const message = doc.querySelector(".game-over-display-msg");
+    
+    function display(winnerID){
+       message.textContent = `${players.getNameFor(winnerID)} wins`;
+       div.classList.remove("hidden");
+    }
 
+    function hide(){
+        div.style.add = "hidden";
+    }
+
+    return {
+        display,
+        hide
+    }
+})(document, playerList);
+
+(function (doc, cellGrid) {
+    //cell inputs
+    const container = doc.querySelector(".game-grid");
     container.addEventListener("click", function (event) {
         const clicked = event.target;
         if (event.target.className !== "cell") {
@@ -332,8 +380,18 @@ const turnDisplayer = (function (doc, players) {
         const [cellRow, cellCol] = cellGrid.getCellPositionByIndex(clickedCellIndex);
         game.playTurn(cellRow, cellCol);
         gridDisplayer.update(game.getBoardState());
+        if(game.isGameOver()){
+            gridDisplayer.gameOver();
+            gameOverDisplayer.display(game.getGameWinner());
+        }
         turnDisplayer.update(game.getActivePlayer());
     });
+
+
+    //reset input
+
+
+    //rename input
 })(document, gameGrid);
 
 game.startGame();
