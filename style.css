@@ -56,6 +56,8 @@ img {
 }
 
 .player-turn-indicator {
+  display: flex;
+  justify-content: right;
   text-align: right;
   padding: 30px;
 }
@@ -68,6 +70,34 @@ img {
 .player-turn-indicator p.inactive {
   opacity: 0.5;
 }
+
+.rename-button {
+  background-image: url(images/pencil.svg);
+  width: 1rem;
+  height: 1rem;
+  border: none;
+  background-color: rgba(255, 255, 255, 0);
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-top: 10px;
+}
+
+.player-turn-indicator .form-container {
+  display: none;
+}
+
+.rename-form {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 10px;
+}
+
+.rename-form button {
+  justify-self: right;
+  grid-column: span 2;
+  padding: 5px 20px;
+}
+
 .game-grid {
   flex: auto;
   display: grid;

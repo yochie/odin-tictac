@@ -322,30 +322,56 @@ const gridDisplayer = (function (doc, rows, cols, players, grid) {
 })(document, gridRows, gridCols, playerList, gameGrid);
 
 const turnDisplayer = (function (doc, players) {
+    const view = doc.querySelector(".player-turn-indicator .view");
+    const list = doc.querySelector(".player-turn-indicator .view .list");
+    const form = doc.querySelector(".player-turn-indicator .form-container");
     const playerTurnIndicators = createTurnIndicators();
-
     function createTurnIndicators() {
         const playerNodes = [];
-        const container = doc.querySelector(".player-turn-indicator");
         for (let playerID of players.getIDs()) {
             const node = doc.createElement("p");
             node.textContent = `player ${players.getSymbolFor(playerID)}`;
-            container.appendChild(node);
+            list.appendChild(node);
             playerNodes[playerID] = node;
         }
 
         return playerNodes;
     }
 
-    function update(activePlayer) {
+    function updateActivePlayer(activePlayer) {
         for (let playerID of playerTurnIndicators.keys()) {
             playerTurnIndicators[playerID].className = playerID === activePlayer ? "active" : "inactive";
         }
     }
 
-    return {
-        update
+    function updateNames() {
+        for (let playerID of playerTurnIndicators.keys()) {
+            playerTurnIndicators[playerID].textContent = players.getNameFor(playerID);
+        }
     }
+
+    function displayForm() {
+        view.style.display = "none";
+        form.style.display = "block";
+    }
+
+    function displayForm() {
+        view.style.display = "none";
+        form.style.display = "block";
+    }
+
+    function hideForm() {
+        view.style.display = "block";
+        form.style.display = "none";
+    }
+
+    return {
+        updateActivePlayer,
+        updateNames,
+        displayForm,
+        hideForm,
+    }
+
 })(document, playerList);
 
 const gameOverDisplayer = (function (doc, players) {
@@ -371,7 +397,7 @@ const gameOverDisplayer = (function (doc, players) {
     }
 })(document, playerList);
 
-(function (doc, cellGrid) {
+(function (doc, cellGrid, players) {
     //cell inputs
     const container = doc.querySelector(".game-grid");
     container.addEventListener("click", function (event) {
@@ -388,7 +414,7 @@ const gameOverDisplayer = (function (doc, players) {
             gridDisplayer.gameOver();
             gameOverDisplayer.display(game.getGameWinner());
         }
-        turnDisplayer.update(game.getActivePlayer());
+        turnDisplayer.updateActivePlayer(game.getActivePlayer());
     });
 
 
@@ -396,14 +422,34 @@ const gameOverDisplayer = (function (doc, players) {
     const resetButton = doc.querySelector("button.reset-button");
     resetButton.addEventListener("click", () => {
         game.startGame();
-        turnDisplayer.update(game.getActivePlayer());
+        turnDisplayer.updateActivePlayer(game.getActivePlayer());
         gridDisplayer.gameStart();
         gridDisplayer.update(game.getBoardState());
         gameOverDisplayer.hide();
     });
 
-    //rename input
-})(document, gameGrid);
+    //open rename form
+    const renameButton = doc.querySelector(".player-turn-indicator button.rename-button");
+    renameButton.addEventListener("click", () => {
+        turnDisplayer.displayForm();
+    });
+
+
+    //submit rename form
+    const submitRenameButton = doc.querySelector(".player-turn-indicator button.submit-button");
+    submitRenameButton.addEventListener("click", () => {
+        //TODO : fix hardcoded link to ids... probably should generate inputs with ids
+        const xName = doc.querySelector(".player-turn-indicator input#x").value;
+        const oName = doc.querySelector(".player-turn-indicator input#o").value;
+
+        players.setName(0, xName);
+        players.setName(1, oName);
+
+        turnDisplayer.updateNames();
+        turnDisplayer.hideForm();
+    });
+
+})(document, gameGrid, playerList);
 
 game.startGame();
-turnDisplayer.update(game.getActivePlayer());
+turnDisplayer.updateActivePlayer(game.getActivePlayer());

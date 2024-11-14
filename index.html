@@ -9,7 +9,21 @@
 </head>
 <body>
     <div class="main">
-        <div class="player-turn-indicator"></div>
+        <div class="player-turn-indicator">
+            <div class="view">
+                <div class="list"></div>
+                <button class="rename-button"></button>
+            </div>
+            <div class="form-container">
+                    <div class="rename-form">
+                        <label for="x">X : </label>
+                        <input type="text" name="x" id="x">
+                        <label for="o">O : </label>
+                        <input type="text" name="o" id="o">
+                        <button class="submit-button" type="button">Done</button>
+                    </div>
+            </div>
+        </div>
         <div class="game-grid">
             <div class="cell"></div>
             <div class="cell"></div>
