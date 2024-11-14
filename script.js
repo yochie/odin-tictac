@@ -389,6 +389,14 @@ const gameOverDisplayer = (function (doc, players){
 
 
     //reset input
+    const resetButton = doc.querySelector("button.reset-button");
+    resetButton.addEventListener("click", () => {
+        game.startGame();
+        turnDisplayer.update(game.getActivePlayer());
+        gridDisplayer.gameStart();
+        gridDisplayer.update(game.getBoardState());
+        gameOverDisplayer.hide();
+    });
 
     //rename input
 })(document, gameGrid);
