@@ -37,10 +37,13 @@ img {
 }
 
 /* normalize end */
-
-.game-grid {
+.main {
   min-height: 100vh;
   min-width: 100vw;
+  position: relative;
+}
+
+.game-grid {
   display: grid;
   grid-template-columns: 100px 100px 100px;
   grid-auto-rows: 100px;
@@ -73,11 +76,39 @@ img {
   font-size: 1.2rem;
 }
 
-.game-over-display {
+.overlay {
   position: absolute;
-  margin: auto;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.game-over-display.hidden {
+.game-over-display {
+  display: inline;
+  padding: clamp(20px, 30px + 1vw, 50px);
+  text-align: center;
+  background-color: rgba(139, 181, 218, 0.261);
+  border-radius: 30px;
+}
+
+.game-over-display h2 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.game-over-display-msg {
+  font-size: 2rem;
+}
+
+.overlay.hidden {
   display: none;
+}
+
+.reset-button {
+  margin-top: 30px;
+  padding: 10px 20px;
 }

@@ -8,23 +8,26 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="player-turn-indicator"></div>
-    <div class="game-grid">
-        <div class="cell"></div>
-        <div class="cell"></div>
-        <div class="cell"></div>
-
-        <div class="cell"></div>
-        <div class="cell"></div>
-        <div class="cell"></div>
-
-        <div class="cell"></div>
-        <div class="cell"></div>
-        <div class="cell"></div>
-    </div>
-    <div class="game-over-display hidden">
-        <h2>Game over</h2>
-        <p class="game-over-display-msg"></p>
+    <div class="main">
+        <div class="player-turn-indicator"></div>
+        <div class="game-grid">
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+        </div>
+        <div class="overlay hidden">
+            <div class="game-over-display">
+                <h2>Game over</h2>
+                <p class="game-over-display-msg"></p>
+                <button class="reset-button">Play again</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>

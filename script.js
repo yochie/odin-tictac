@@ -349,16 +349,16 @@ const turnDisplayer = (function (doc, players) {
 })(document, playerList);
 
 const gameOverDisplayer = (function (doc, players){
-    const div = doc.querySelector(".game-over-display");
+    const overlay = doc.querySelector(".overlay");
     const message = doc.querySelector(".game-over-display-msg");
     
     function display(winnerID){
        message.textContent = `${players.getNameFor(winnerID)} wins`;
-       div.classList.remove("hidden");
+       overlay.classList.remove("hidden");
     }
 
     function hide(){
-        div.style.add = "hidden";
+        overlay.style.add = "hidden";
     }
 
     return {
@@ -389,7 +389,6 @@ const gameOverDisplayer = (function (doc, players){
 
 
     //reset input
-
 
     //rename input
 })(document, gameGrid);
